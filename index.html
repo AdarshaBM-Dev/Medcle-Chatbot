@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Doctor-Patient Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        #chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin: 1rem auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #toggle-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0 0 0;
+        }
+        #toggle-buttons button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: #e9ecef;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        #toggle-buttons button.active {
+            background: #007bff;
+            color: white;
+        }
+        #chat-window {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 20px;
+            clear: both;
+        }
+        .user-message {
+            background: #007bff;
+            color: white;
+            float: right;
+            text-align: right;
+        }
+        .bot-message {
+            background: #e9ecef;
+            color: #333;
+            float: left;
+            text-align: left;
+        }
+        #input-area {
+            display: flex;
+            padding: 1rem;
+        }
+        #user-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+        #send-btn {
+            background: #007bff;
+            border: none;
+            color: white;
+            padding: 0 1.5rem;
+            margin-left: 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        #send-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Doctor-Patient Chatbot</h1>
+    </header>
+    <div id="chat-container">
+        <div id="toggle-buttons">
+            <button id="patient-btn" class="active">Patient</button>
+            <button id="doctor-btn">Doctor</button>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off" />
+            <button id="send-btn" disabled>Send</button>
+        </div>
+    </div>
+
+    <script>
+        const patientBtn = document.getElementById('patient-btn');
+        const doctorBtn = document.getElementById('doctor-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        let currentMode = 'patient';
+
+        // Enable send button only if input is not empty
+        userInput.addEventListener('input', () => {
+            sendBtn.disabled = userInput.value.trim() === '';
+        });
+
+        // Toggle between patient and doctor modes
+        patientBtn.addEventListener('click', () => {
+            if (currentMode !== 'patient') {
+                currentMode = 'patient';
+                patientBtn.classList.add('active');
+                doctorBtn.classList.remove('active');
+                clearChat();
+                addBotMessage("You are now chatting as a Patient. Ask about your symptoms, problems, or medicines.");
+            }
+        });
+
+        doctorBtn.addEventListener('click', () => {
+            if (currentMode !== 'doctor') {
+                currentMode = 'doctor';
+                doctorBtn.classList.add('active');
+                patientBtn.classList.remove('active');
+                clearChat();
+                addBotMessage("You are now chatting as a Doctor. You can provide solutions and medicine recommendations.");
+            }
+        });
+
+        // Clear chat window
+        function clearChat() {
+            chatWindow.innerHTML = '';
+        }
+
+        // Add user message to chat
+        function addUserMessage(message) {
+            const div = document.createElement('div');
+            div.classList.add('message', 'user-message');
+            div.textContent = message;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Add bot message to chat
+        function addBotMessage(message) {
+            const div = document.createElement('div');
+            div.classList.add('message', 'bot-message');
+            div.textContent = message;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Predefined conversation logic for patient mode
+        function patientResponse(input) {
+            input = input.toLowerCase();
+            if (input.includes('headache')) {
+                return "For headache, try to rest and stay hydrated. If it persists, consult a doctor.";
+            } else if (input.includes('fever')) {
+                return "For fever, take plenty of fluids and rest. You may consider paracetamol.";
+            } else if (input.includes('cough')) {
+                return "For cough, drink warm fluids and consider cough syrup. If it worsens, see a doctor.";
+            } else if (input.includes('cold')) {
+                return "For common cold, rest and stay hydrated. Over-the-counter cold medicines may help.";
+            } else if (input.includes('diabetes')) {
+                return "Diabetes requires regular monitoring of blood sugar and medication as prescribed by your doctor.";
+            } else if (input.includes('medicine')) {
+                return "Please specify the medicine you want information about.";
+            } else if (input.includes('paracetamol')) {
+                return "Paracetamol is used to reduce fever and relieve pain. Follow the dosage instructions on the package.";
+            } else if (input.includes('ibuprofen')) {
+                return "Ibuprofen is used to reduce inflammation and pain. Take with food to avoid stomach upset.";
+            } else {
+                return "Sorry, I am not sure about that. Please consult a healthcare professional.";
+            }
+        }
+
+        // Predefined conversation logic for doctor mode
+        function doctorResponse(input) {
+            input = input.toLowerCase();
+            if (input.includes('symptom')) {
+                return "Common symptoms include fever, cough, headache, fatigue, and cold.";
+            } else if (input.includes('solution') || input.includes('treatment')) {
+                return "Treatment depends on the diagnosis. Please provide more details about the patient's condition.";
+            } else if (input.includes('medicine')) {
+                return "Common medicines include paracetamol, ibuprofen, antibiotics, and insulin as prescribed.";
+            } else if (input.includes('diabetes')) {
+                return "Diabetes management includes lifestyle changes, medication, and regular monitoring.";
+            } else {
+                return "Please provide more information or specify the problem.";
+            }
+        }
+
+        // Handle send button click or enter key
+        function handleSend() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            addUserMessage(message);
+            userInput.value = '';
+            sendBtn.disabled = true;
+
+            let response;
+            if (currentMode === 'patient') {
+                response = patientResponse(message);
+            } else {
+                response = doctorResponse(message);
+            }
+            setTimeout(() => addBotMessage(response), 500);
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !sendBtn.disabled) {
+                handleSend();
+            }
+        });
+
+        // Initialize chat with patient mode message
+        addBotMessage("You are now chatting as a Patient. Ask about your symptoms, problems, or medicines.");
+    // CSV parsing function
+    function parseCSV(text) {
+        const lines = text.trim().split('\n');
+        const result = [];
+        const headers = lines[0].split(',');
+        for (let i = 1; i < lines.length; i++) {
+            const obj = {};
+            let currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            for (let j = 0; j < headers.length; j++) {
+                obj[headers[j].trim()] = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
+            }
+            result.push(obj);
+        }
+        return result;
+    }
+
+    let dataset = [];
+
+    // Load dataset CSV file
+    fetch('dataset - Sheet1.csv')
+        .then(response => response.text())
+        .then(text => {
+            dataset = parseCSV(text);
+            console.log('Dataset loaded:', dataset);
+        })
+        .catch(error => {
+            console.error('Error loading dataset:', error);
+        });
+
+    // Search dataset for disease or symptom match
+    function searchDataset(input) {
+        input = input.toLowerCase();
+        for (const entry of dataset) {
+            if (entry.disease.toLowerCase().includes(input) || entry.cure.toLowerCase().includes(input)) {
+                return entry.cure;
+            }
+        }
+        return null;
+    }
+
+    // Modified patientResponse to use dataset
+    function patientResponse(input) {
+        input = input.toLowerCase();
+        const datasetResponse = searchDataset(input);
+        if (datasetResponse) {
+            return datasetResponse;
+        }
+        if (input.includes('headache')) {
+            return "For headache, try to rest and stay hydrated. If it persists, consult a doctor.";
+        } else if (input.includes('fever')) {
+            return "For fever, take plenty of fluids and rest. You may consider paracetamol.";
+        } else if (input.includes('cough')) {
+            return "For cough, drink warm fluids and consider cough syrup. If it worsens, see a doctor.";
+        } else if (input.includes('cold')) {
+            return "For common cold, rest and stay hydrated. Over-the-counter cold medicines may help.";
+        } else if (input.includes('diabetes')) {
+            return "Diabetes requires regular monitoring of blood sugar and medication as prescribed by your doctor.";
+        } else if (input.includes('medicine')) {
+            return "Please specify the medicine you want information about.";
+        } else if (input.includes('paracetamol')) {
+            return "Paracetamol is used to reduce fever and relieve pain. Follow the dosage instructions on the package.";
+        } else if (input.includes('ibuprofen')) {
+            return "Ibuprofen is used to reduce inflammation and pain. Take with food to avoid stomach upset.";
+        } else {
+            return "Sorry, I am not sure about that. Please consult a healthcare professional.";
+        }
+    }
+
+    // Modified doctorResponse to use dataset
+    function doctorResponse(input) {
+        input = input.toLowerCase();
+        const datasetResponse = searchDataset(input);
+        if (datasetResponse) {
+            return datasetResponse;
+        }
+        if (input.includes('symptom')) {
+            return "Common symptoms include fever, cough, headache, fatigue, and cold.";
+        } else if (input.includes('solution') || input.includes('treatment')) {
+            return "Treatment depends on the diagnosis. Please provide more details about the patient's condition.";
+        } else if (input.includes('medicine')) {
+            return "Common medicines include paracetamol, ibuprofen, antibiotics, and insulin as prescribed.";
+        } else if (input.includes('diabetes')) {
+            return "Diabetes management includes lifestyle changes, medication, and regular monitoring.";
+        } else {
+            return "Please provide more information or specify the problem.";
+        }
+    }
+    </script>
+</body>
+</html>

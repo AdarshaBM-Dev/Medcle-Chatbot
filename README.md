@@ -1,2 +1,2 @@
-# Medcle-Chatbot
-Medcle-Chatbot
+# Medical-chatbot
+Medical chatbot
