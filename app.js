@@ -4,7 +4,7 @@ const chatBox = document.getElementById('chat-box');
 const responses = {
     "hello": "Hello! I am Healtho AI. How can I help you today?",
     "fever": "For a fever, rest and stay hydrated. If it's high, please see a doctor.",
-    "headache": "Headaches can be caused by stress or dehydration. Try resting in a dark room.",
+    "headache": "Headaches can be caused by stress or dehydration. Try resting in a dark room.",   
     "default": "I'm not sure about that. Please consult a medical professional for specific advice."
 };
 
